@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hotel Price Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .search-box {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #003580;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .hotel {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box">
+        <h1>Hotel Price Tracker</h1>
+        <input type="text" id="destination" placeholder="Enter city name (e.g., London, Paris)">
+        <button onclick="searchHotels()">Search</button>
+    </div>
+    <div id="results"></div>
+
+    <script>
+        function searchHotels() {
+            const destination = document.getElementById('destination').value;
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="loading">Searching hotels...</div>';
+            
+            fetch(`/search/${destination}`)
+                .then(response => response.json())
+                .then(hotels => {
+                    if (hotels.length === 0) {
+                        results.innerHTML = '<div class="hotel">No hotels found</div>';
+                        return;
+                    }
+                    
+                    results.innerHTML = hotels.map(hotel => `
+                        <div class="hotel">
+                            <h3>${hotel.name}</h3>
+                            <p><strong>Price:</strong> ${hotel.price}</p>
+                            <p><strong>Rating:</strong> ${hotel.rating}</p>
+                            <p><strong>Location:</strong> ${hotel.location}</p>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="hotel">Error searching hotels</div>';
+                });
+        }
+    </script>
+</body>
+</html>
